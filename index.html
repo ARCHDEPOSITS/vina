@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Members</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .tile {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px;
+            width: 250px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .tile img {
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div id="members-container"></div>
+
+    <script>
+        async function fetchMembers() {
+            try {
+                const response = await fetch('http://localhost:3000/members');
+                const members = await response.json();
+                const container = document.getElementById('members-container');
+                container.innerHTML = '';
+
+                members.forEach(member => {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.innerHTML = `
+                        <img src="${member.user.avatar ? `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png` : 'https://via.placeholder.com/80'}" alt="${member.user.username}">
+                        <strong>${member.user.username}</strong><br>
+                        Joined: ${new Date(member.joined_at).toLocaleDateString()}<br>
+                        Roles: ${member.roles.join(', ')}
+                    `;
+                    container.appendChild(tile);
+                });
+            } catch (error) {
+                console.error('Error fetching members:', error);
+            }
+        }
+
+        fetchMembers();
+    </script>
+</body>
+</html>
